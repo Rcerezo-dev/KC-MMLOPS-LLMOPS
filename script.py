@@ -4,7 +4,12 @@ from transformers import pipeline
 from typing import List
 
 app = FastAPI(title="FastAPI + Hugging Face Practice")
+tts_pipe = None
 
+@app.on_event("startup")
+def load_model():
+    global tts_pipe
+    tts_pipe = pipeline("text-to-speech", model="suno/bark-small")
 # -------------------------
 # PIPELINES HUGGING FACE
 # -------------------------
@@ -18,6 +23,20 @@ text_generator = pipeline(
     "text-generation",
     model="distilgpt2"
 )
+
+@app.get("/tts")
+def text_to_speech(text: str):
+    output = tts_pipe(text)
+
+    audio = output["audio"]
+    sampling_rate = output["sampling_rate"]
+
+    audio_bytes = (audio * 32767).astype(np.int16).tobytes()
+
+    return Response(
+        content=audio_bytes,
+        media_type="audio/wav"
+    )
 
 # -------------------------
 # ENDPOINTS SIMPLES
