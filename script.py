@@ -2,14 +2,11 @@ import torch
 from fastapi import FastAPI
 from transformers import pipeline
 from typing import List
+from fastapi import HTTPException
 
-app = FastAPI(title="FastAPI + Hugging Face Practice")
+app = FastAPI(title="FastAPI + Hugging Face API")
 tts_pipe = None
 
-@app.on_event("startup")
-def load_model():
-    global tts_pipe
-    tts_pipe = pipeline("text-to-speech", model="suno/bark-small")
 # -------------------------
 # PIPELINES HUGGING FACE
 # -------------------------
@@ -24,19 +21,6 @@ text_generator = pipeline(
     model="distilgpt2"
 )
 
-@app.get("/tts")
-def text_to_speech(text: str):
-    output = tts_pipe(text)
-
-    audio = output["audio"]
-    sampling_rate = output["sampling_rate"]
-
-    audio_bytes = (audio * 32767).astype(np.int16).tobytes()
-
-    return Response(
-        content=audio_bytes,
-        media_type="audio/wav"
-    )
 
 # -------------------------
 # ENDPOINTS SIMPLES
@@ -96,3 +80,41 @@ def cesar_cipher(mensaje: str, clave: int):
             resultado += caracter
 
     return {"resultado": resultado}
+
+@app.post("/calculadora")
+def calculadora(
+    operacion: str,
+    numeros: List[float]
+):
+    if operacion == "suma":
+        return sum(numeros)
+    elif operacion == "resta":
+        resultado = numeros[0]
+        for n in numeros[1:]:
+            resultado -= n
+        return resultado
+    elif operacion == "multiplicacion":
+        resultado = 1
+        for n in numeros:
+            resultado *= n
+        return resultado
+    elif operacion == "division":
+        resultado = numeros[0]
+        for n in numeros[1:]:
+            if n == 0:
+                return {"error": "División por cero"}
+            resultado /= n
+        return resultado
+    else:
+        return {"error": "Operación no válida"}
+
+@app.get("/IMC")
+def calcular_imc(peso: float, altura: float):
+    """
+    Calcula el Índice de Masa Corporal (IMC).
+    """
+    if altura <= 0:
+        raise HTTPException(status_code=400, detail="La altura debe ser mayor que cero.")
+
+    imc = peso / (altura ** 2)
+    return {"IMC": imc}
