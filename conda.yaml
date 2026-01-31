@@ -11,10 +11,12 @@ dependencies:
   - setuptools 
   - wheel 
   - poppler 
+  - transformers=4.35.2
   - pip:
       - fastapi==0.115.6
       - mlflow==2.18.0
       - joblib
+      - uvicorn==0.24.0
 
 
 
