@@ -40,7 +40,9 @@ Para revisar esta parte del proyecto, deben consultarse:
 ##  Estructura del proyecto
 
 Dentro del repositorio se encuentran los siguientes archivos:
-KC-MMLOPS-LLMOPS/
+## Estructura del proyecto
+
+```text
 KC-MMLOPS-LLMOPS/
 │
 ├── 1.Exploración_de_datos.ipynb
@@ -108,3 +110,4 @@ KC-MMLOPS-LLMOPS/
 └── __pycache__/
     ├── intro_fastapi.cpython-310.pyc
     └── script.cpython-311.pyc
+```
